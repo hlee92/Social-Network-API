@@ -2,7 +2,7 @@ const { Thought, User } = require("../models");
 
 const user = {
 getAllUsers(req,res) {
-    User.find({})
+    User.find({}).populate('thoughts')
         .then(data => res.json(data))
         .catch(err => {
             console.log(err);
@@ -31,8 +31,16 @@ getAllUsers(req,res) {
 },
 
 
- deleteUser() {
-
+ deleteUser({params}, res) {
+    User.findOneAndDelete({_id: params.id})
+    .then(data => {
+        if(!data) {
+            res.status(404).json({message: 'No User with this particular ID!'});
+            return;
+        }
+        res.json(data);
+    })
+    .catch(err => res.status(400).json(err));
 },
 
  addFriend() {
